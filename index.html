@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Présente le projet dans les moteurs de recherche. -->
+    <meta name="description" content="NEXUS MATRIX : laboratoire numérique interactif, interface hacker et expérience Matrix.">
+    <title>NEXUS MATRIX — Neural Operations Center</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Toile utilisée pour dessiner la pluie Matrix. -->
+    <canvas id="pluie-matrice" aria-hidden="true"></canvas>
+
+    <!-- Lumières décoratives de l'arrière-plan. -->
+    <div class="lueur-fond lueur-gauche"></div>
+    <div class="lueur-fond lueur-droite"></div>
+
+    <!-- Écran de démarrage circulaire. -->
+    <section class="ecran-initialisation" id="ecran-initialisation">
+        <div class="cadre-initialisation">
+            <div class="entete-initialisation">
+                <span class="logo-initialisation">N<span>/</span>X</span>
+                <span class="etat-connexion"><i></i> SYSTEM BOOT SEQUENCE</span>
+            </div>
+
+            <div class="hud-circulaire">
+                <svg class="hud-svg" viewBox="0 0 360 360" role="img" aria-label="Progression circulaire de l'initialisation">
+                    <defs>
+                        <linearGradient id="degrade-hud" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#d9ff75"></stop>
+                            <stop offset="48%" stop-color="#00ffc3"></stop>
+                            <stop offset="100%" stop-color="#00aaff"></stop>
+                        </linearGradient>
+                        <filter id="halo-hud">
+                            <feGaussianBlur stdDeviation="4" result="flou"></feGaussianBlur>
+                            <feMerge><feMergeNode in="flou"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+                        </filter>
+                    </defs>
+                    <circle class="anneau-hud anneau-exterieur" cx="180" cy="180" r="158"></circle>
+                    <circle class="anneau-hud anneau-fin" cx="180" cy="180" r="146"></circle>
+                    <circle class="anneau-hud anneau-interieur" cx="180" cy="180" r="119"></circle>
+                    <circle class="anneau-hud anneau-fond" cx="180" cy="180" r="91"></circle>
+                    <circle class="anneau-hud anneau-progression" id="anneau-progression" cx="180" cy="180" r="91"></circle>
+                    <circle class="anneau-hud anneau-coeur" cx="180" cy="180" r="69"></circle>
+                    <g class="graduations-hud" id="graduations-hud"></g>
+                    <g class="traits-hud"><path d="M180 5 V31 M180 329 V355 M5 180 H31 M329 180 H355"></path><path d="M56 56 L75 75 M285 285 L304 304 M304 56 L285 75 M75 285 L56 304"></path></g>
+                </svg>
+                <div class="valeur-hud">
+                    <strong id="valeur-initialisation">00</strong>
+                    <span>%</span>
+                    <small>CORE ONLINE</small>
+                </div>
+                <span class="point-hud point-hud-un"></span>
+                <span class="point-hud point-hud-deux"></span>
+            </div>
+
+            <div class="texte-initialisation">
+                <p id="message-initialisation">INITIALISATION DU NOYAU NEURAL</p>
+                <span class="curseur-vert"></span>
+            </div>
+
+            <div class="barre-initialisation"><span id="barre-initialisation"></span></div>
+
+            <div class="infos-initialisation">
+                <span>PROTOCOL <b>NX-09</b></span>
+                <span id="statut-initialisation">SCANNING SYSTEM...</span>
+                <span>ENCRYPTION <b>ACTIVE</b></span>
+            </div>
+            <div class="coins-initialisation"><i></i><i></i><i></i><i></i></div>
+        </div>
+        <p class="signature-initialisation">NEXUS MATRIX <span>•</span> NEURAL OPERATIONS CENTER</p>
+    </section>
+
+    <!-- Interface principale affichée après le démarrage. -->
+    <div class="application" id="application" aria-hidden="true">
+        <header class="barre-haute">
+            <a class="marque" href="#accueil" aria-label="Nexus Matrix accueil"><span class="marque-symbole">N<span>/</span>X</span>
+                <span class="marque-texte">NEXUS<span>MATRIX</span></span></a>
+            <div class="statut-global"><i></i> NEURAL NETWORK <b>ONLINE</b></div>
+            <button class="bouton-menu" id="bouton-menu" aria-label="Ouvrir le menu" aria-expanded="false">
+                <span></span><span></span><span></span></button>
+            <nav class="navigation" id="navigation-principale">
+                <a class="lien-navigation actif" href="#accueil" data-i18n="nav_overview">OVERVIEW</a>
+                <a class="lien-navigation" href="#securite" data-i18n="nav_security">SECURITY</a>
+                <a class="lien-navigation" href="#dashboard" data-i18n="nav_dashboard">DASHBOARD</a>
+                <a class="lien-navigation" href="#laboratoire" data-i18n="nav_code">CODE LAB</a>
+                <a class="lien-navigation" href="#cryptage" data-i18n="nav_crypto">CRYPTO LAB</a>
+                <a class="lien-navigation" href="#analyse" data-i18n="nav_scan">SYSTEM SCAN</a>
+                <a class="lien-navigation" href="#contact" data-i18n="nav_contact">CONTACT</a>
+            </nav>
+            <div class="profil-haut"><span class="avatar-profil">C/A</span><span>GUEST_01</span><i></i></div>
+            <button class="bouton-son" id="bouton-son" type="button" aria-pressed="true">♫ SOUND ON</button>
+        </header>
+
+        <main>
+            <!-- Première section : introduction et fenêtres de sécurité. -->
+            <section class="section-accueil section-conteneur" id="accueil">
+                <div class="titre-section">
+                    <span class="sur-titre">01 / SYSTEM ENTRY</span>
+                    <h1>WELCOME TO THE <span>NEXUS</span></h1>
+                    <p>Une interface entre le code, les données et l'intelligence numérique.</p>
+                </div>
+
+                <div class="grille-securite" id="securite">
+                    <article class="fenetre-terminal fenetre-journaux">
+                        <div class="barre-fenetre"><span><i></i><i></i><i></i> CORE TERMINAL</span>
+                            <small>SECURE.SYS</small></div>
+                        <div class="contenu-journaux" id="journaux-securite" aria-live="polite">
+                            <p><b>[00:00:01]</b> INITIALIZING NEXUS CORE...</p>
+                            <p><b>[00:00:02]</b> LOADING ENCRYPTION MODULE <span>OK</span></p>
+                            <p><b>[00:00:03]</b> VERIFYING NEURAL NETWORK <span>OK</span></p>
+                            <p><b>[00:00:04]</b> FIREWALL STATUS: ACTIVE</p>
+                            <p><b>[00:00:05]</b> SECURE CHANNEL ESTABLISHED</p>
+                            <p class="ligne-attente">root@nexus:~$ <i></i></p>
+                        </div>
+                    </article>
+
+                    <article class="fenetre-verrou">
+                        <div class="barre-fenetre"><span><i></i><i></i><i></i> ACCESS CONTROL</span>
+                            <small>NODE_01</small></div>
+                        <div class="contenu-verrou">
+                            <div class="hexagone-verrou">
+                                <svg viewBox="0 0 100 100" aria-hidden="true">
+                                <path d="M31 45 V32 A19 19 0 0 1 69 32 V45" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"></path>
+                                <rect x="22" y="43" width="56" height="43" rx="7" fill="currentColor"></rect>
+                                <circle cx="50" cy="61" r="6" fill="#03150f"></circle>
+                                <path d="M50 65 V76" stroke="#03150f" stroke-width="5" stroke-linecap="round"></path>
+                                </svg>
+                            </div>
+                            <strong>ACCESS GRANTED</strong>
+                            <span>SECURE NODE CONNECTED</span>
+                        </div>
+                    </article>
+
+                    <article class="fenetre-verrou fenetre-verrou-large">
+                        <div class="barre-fenetre"><span><i></i><i></i><i></i> VAULT PROTECTION</span><small>NODE_02</small></div>
+                        <div class="contenu-verrou">
+                            <div class="hexagone-verrou">
+                                <svg viewBox="0 0 100 100" aria-hidden="true">
+                                <path d="M31 45 V32 A19 19 0 0 1 69 32 V45" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"></path>
+                                <rect x="22" y="43" width="56" height="43" rx="7" fill="currentColor"></rect>
+                                <circle cx="50" cy="61" r="6" fill="#03150f"></circle>
+                                <path d="M50 65 V76" stroke="#03150f" stroke-width="5" stroke-linecap="round"></path>
+                                </svg>
+                            </div>
+                            <strong>VAULT SECURED</strong>
+                            <span>256-BIT ENCRYPTION</span>
+                        </div>
+                    </article>
+
+                    <article class="fenetre-deploiement">
+                        <div class="barre-fenetre"><span><i></i><i></i><i></i> NEURAL CLOUD</span><small>DEPLOYMENT HUB</small></div>
+                        <div class="contenu-deploiement">
+                            <div class="reseau-noeuds"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                            <div class="nuage-deploiement"><span>◉</span><strong>NEBULA</strong><small>DEPLOY</small></div>
+                            <div class="donnees-deploiement"><span>DATA STREAM <b>ACTIVE</b></span>
+                                <span>SYNC RATE <b>98.7%</b></span><span>NODE STATUS <b>STABLE</b></span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+                <div class="pied-section">
+                    <span>ALL SYSTEMS NOMINAL</span><span>ENCRYPTED CONNECTION <i></i></span>
+                </div>
+            </section>
+
+            <!-- Deuxième section : tableau de bord inspiré de la troisième capture. -->
+            <section class="section-dashboard section-conteneur" id="dashboard">
+                <div class="titre-section titre-compact">
+                    <span class="sur-titre">02 / COMMAND CENTER</span>
+                    <h2>SYSTEM <span>OVERVIEW</span></h2>
+                    <p>Surveille les flux et contrôle les activités du réseau.</p>
+                </div>
+
+                <div class="interface-dashboard">
+                    <aside class="barre-laterale">
+                        <div class="identifiant-terminal">root@NEXUS:~#</div>
+                        <a class="element-lateral actif" href="#dashboard"><span>▦</span> /dashboard.sh</a>
+                        <a class="element-lateral" href="#laboratoire"><span>⌘</span> /code_lab/</a>
+                        <a class="element-lateral" href="#securite"><span>◈</span> /security.log</a>
+                        <a class="element-lateral" href="#contact"><span>✉</span> /contact/</a>
+                        <div class="separateur-lateral">SYSTEM CONFIG</div>
+                        <button class="element-lateral texte-lateral" id="bouton-preferences" type="button"><span>⚙</span> /preferences</button>
+                        <button class="element-lateral texte-lateral" id="bouton-reseau" type="button"><span>⌁</span> /network</button>
+                        <div class="profil-lateral"><span class="avatar-profil">CA</span>
+                            <span>CHARLES AZEL<small>OPERATOR LEVEL 01</small></span></div>
+                    </aside>
+
+                    <div class="contenu-dashboard">
+                        <div class="entete-dashboard"><div><span class="sur-titre">LIVE MONITORING</span>
+                            <h3 data-i18n="dashboard_title">System Overview</h3>
+                            <p>STATUS: <b>ONLINE</b> <span>•</span> UPTIME: 24:08:16</p>
+                        </div>
+                        <button class="bouton-secondaire" id="bouton-actualiser" data-i18n="refresh">↻ REFRESH DATA</button>
+                    </div>
+
+                        <div class="cartes-statistiques">
+                            <article class="carte-statistique"><span>DATA STREAM</span>
+                                <strong id="statistique-flux">24,500<small>.00</small></strong>
+                                <small class="variation positive">↗ +12.8% this week</small>
+                                <i class="icone-stat">⌁</i>
+                            </article>
+                            <article class="carte-statistique carte-bleue"><span>ACTIVE CONNECTIONS</span>
+                                <strong id="statistique-connexions">1,204</strong>
+                                <small class="variation positive">↗ +04.2% this week</small>
+                                <i class="icone-stat">◎</i>
+                            </article>
+                            <article class="carte-statistique carte-orange"><span>NETWORK REQUESTS</span>
+                                <strong id="statistique-requetes">48.2k</strong>
+                                <small class="variation negative">↘ -02.1% packet loss</small>
+                                <i class="icone-stat">⌘</i>
+                            </article>
+                        </div>
+
+                        <div class="grille-dashboard-bas">
+                            <article class="panneau-logs">
+                                <div class="titre-panneau">
+                                    <h4 data-i18n="tx_logs">◉ TX_LOGS</h4>
+                                    <button id="bouton-voir-logs" data-i18n="view_all">[ VIEW ALL ]</button>
+                                </div>
+                                <div class="tableau-defilement">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>PROCESS</th>
+                                                <th>VALUE</th>
+                                                <th>TIMESTAMP</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="corps-journal">
+                                            <tr>
+                                                <td><i class="point-tableau"></i> Design_License</td>
+                                                <td>-$15.00</td>
+                                                <td>10-24 14:32:01</td>
+                                            </tr>
+                                            <tr>
+                                                <td><i class="point-tableau"></i> E2_Compute</td>
+                                                <td>-$124.50</td>
+                                                <td>10-22 09:15:44</td>
+                                            </tr>
+                                            <tr>
+                                                <td><i class="point-tableau"></i> Incoming_Node_Transfer</td>
+                                                <td class="valeur-positive">+$4,200.00</td>
+                                                <td>10-20 18:25:16</td>
+                                            </tr>
+                                            <tr>
+                                                <td><i class="point-tableau"></i> Contractor_Escrow</td>
+                                                <td>-$850.00</td>
+                                                <td>10-18 10:12:09</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </article>
+
+                            <div class="colonne-dashboard">
+                                <article class="panneau-preferences">
+                                    <div class="titre-panneau">
+                                        <h4 data-i18n="sys_prefs">SYS_PREFS</h4>
+                                        <span>● LIVE</span>
+                                    </div>
+                                    <label class="ligne-preference">
+                                        <span>daemon_alerts<small>System event alerts</small></span>
+                                        <input type="checkbox" checked><i></i>
+                                    </label>
+                                    <label class="ligne-preference">
+                                        <span>req_2FA<small>Strict access security</small></span>
+                                        <input type="checkbox"><i></i>
+                                    </label>
+                                    <label class="ligne-preference">
+                                        <span>auto_renew<small>Recurring sync job</small></span>
+                                        <input type="checkbox" checked><i></i>
+                                    </label>
+                                </article>
+                                <article class="alerte-privileges">
+                                    <span>⚠ ELEVATE PRIVILEGES</span>
+                                    <p>Current access level is limited. Enable operator mode to unlock advanced telemetry.</p>
+                                    <button id="bouton-operateur">REQUEST ACCESS</button>
+                                </article>
+                            </div>
+                        </div>
+                        <div class="pied-dashboard">
+                            <span>NX_KERNEL v4.2.1 / ENCRYPTION: AES-256</span>
+                            <span>REALTIME MONITORING <i></i></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Troisième section : éditeur de code et résultat Matrix. -->
+            <section class="section-laboratoire section-conteneur" id="laboratoire">
+                <div class="titre-section titre-compact">
+                    <span class="sur-titre">03 / INTERACTIVE EXPERIENCE</span>
+                    <h2>THE <span>CODE LAB</span></h2>
+                    <p>Écris une commande, exécute-la et observe le réseau réagir.</p>
+                </div>
+                <div class="laboratoire-grille">
+                    <article class="editeur-code">
+                        <div class="barre-editeur"><div><i></i><i></i><i></i>
+                            <span>terminal_nexus.js</span>
+                        </div>
+                        <span>JAVASCRIPT / EDITOR</span>
+                    </div>
+                        <div class="zone-code">
+                            <div class="numeros-lignes" aria-hidden="true">01<br>02<br>03<br>04<br>05<br>06<br>07<br>08</div>
+                            <textarea id="zone-commande" spellcheck="false" aria-label="Éditeur de commandes" autocapitalize="off">const nexus = {
+  operator: "Charles Azel",
+  mission: "explore the matrix",
+  mode: "neural"
+};
+
+nexus.run();
+// Le meilleur reste à coder...</textarea>
+                        </div>
+                        <div class="aide-commandes">
+                            <span>COMMANDES : <b>nexus.run()</b> · <b>matrix.scan()</b> · <b>system.help()</b></span>
+                            <span id="compteur-caracteres">0 CHAR</span>
+                        </div>
+                        <div class="actions-code">
+                            <button class="bouton-executer" id="bouton-executer">▶ EXECUTE CODE</button>
+                            <button class="bouton-effacer" id="bouton-effacer">⌫ CLEAR EDITOR</button>
+                            <button class="bouton-exemple" id="bouton-exemple">↺ RESET</button>
+                        </div>
+                        <p class="message-code" id="message-code" aria-live="polite">READY — WAITING FOR YOUR COMMAND</p>
+                    </article>
+
+                    <article class="sortie-matrice">
+                        <div class="barre-sortie">
+                            <span>LIVE OUTPUT / MATRIX STREAM</span>
+                            <span class="etat-sortie"><i></i> STREAMING</span>
+                        </div>
+                        <div class="zone-sortie" id="zone-sortie">
+                            <canvas id="pluie-sortie"></canvas>
+                            <div class="message-sortie" id="message-sortie">
+                                <span>ＮＥＸＵＳ</span>
+                                <strong>AWAITING INPUT</strong>
+                                <small>RUN YOUR FIRST COMMAND</small>
+                            </div>
+                        </div>
+                        <div class="pied-sortie"><span>OUTPUT CHANNEL: 01</span>
+                            <span id="etat-sortie-texte">NO PROCESS RUNNING</span>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- Cinquième module : chiffrement et déchiffrement avec une clé choisie. -->
+            <section class="section-outils section-conteneur" id="cryptage">
+                <div class="titre-section titre-compact">
+                    <span class="sur-titre">05 / SECURE DATA LAB</span>
+                    <h2>CRYPTO <span>LAB</span></h2>
+                    <p>Transforme tes messages et données en texte chiffré, puis retrouve-les avec la même clé.</p>
+                </div>
+                <div class="grille-outils">
+                    <article class="panneau-outil panneau-crypto">
+                        <div class="barre-fenetre"><span><i></i><i></i><i></i> ENCRYPTION CONSOLE</span><small>AES-GCM / 256</small></div>
+                        <label for="texte-cryptage">MESSAGE / CODE / LIEN / EMAIL</label>
+                        <textarea id="texte-cryptage" rows="5" placeholder="Écris ou colle le texte à protéger..."></textarea>
+                        <label for="cle-cryptage">CLÉ SECRÈTE PERSONNELLE</label>
+                        <input id="cle-cryptage" type="password" autocomplete="new-password" placeholder="Choisis une clé solide...">
+                        <div class="actions-outil"><button class="bouton-executer" id="bouton-crypter" type="button">⌁ ENCRYPT</button>
+                            <button class="bouton-secondaire" id="bouton-decrypter" type="button">⌁ DECRYPT</button>
+                        </div>
+                        <label for="resultat-cryptage">SORTIE CHIFFRÉE / TEXTE DÉCHIFFRÉ</label>
+                        <textarea id="resultat-cryptage" rows="5" readonly placeholder="Le résultat apparaîtra ici..."></textarea>
+                        <div class="actions-outil"><button class="bouton-secondaire" id="bouton-copier-crypto" type="button">COPY RESULT</button>
+                            <button class="bouton-secondaire" id="bouton-telecharger-crypto" type="button">DOWNLOAD .TXT</button>
+                        </div>
+                        <p class="retour-outil" id="retour-cryptage" aria-live="polite">AES-256 READY — YOUR KEY STAYS IN THIS BROWSER.</p>
+                    </article>
+                    <aside class="panneau-info-outil panneau-info-crypto">
+                        <canvas id="pluie-crypto" aria-hidden="true"></canvas>
+                        <div class="icone-neural">⁋</div><span class="sur-titre">NEURAL ENCRYPTION</span><h3 data-i18n="crypto_title">YOUR DATA.<br><span>YOUR KEY.</span></h3>
+                        <p data-i18n="crypto_description">Le chiffrement utilise AES-GCM avec une clé dérivée de ton mot de passe. Garde ta clé : sans elle, le déchiffrement est impossible.</p>
+                        <div class="ligne-securite"><i></i> AES-GCM / 256 BITS</div><div class="ligne-securite"><i></i> RANDOM SALT + IV</div><div class="ligne-securite"><i></i> LOCAL PROCESSING</div>
+                    </aside>
+                </div>
+            </section>
+
+            <!-- Sixième module : analyse de texte, code et fichiers locaux. -->
+            <section class="section-outils section-conteneur" id="analyse">
+                <div class="titre-section titre-compact">
+                    <span class="sur-titre">06 / DIAGNOSTIC ENGINE</span>
+                    <h2>SYSTEM <span>SCAN</span></h2>
+                    <p>Soumets un texte, du code ou un fichier texte pour lancer un diagnostic visuel.</p>
+                </div>
+                <div class="analyse-grille">
+                    <article class="panneau-outil panneau-analyse">
+                        <div class="barre-fenetre"><span><i></i><i></i><i></i> NEXUS DIAGNOSTIC</span><small>SCAN ENGINE 2.1</small></div>
+                        <div class="choix-analyse"><label for="fichier-analyse" class="bouton-secondaire">＋ CHOOSE FILE</label><input id="fichier-analyse" type="file" accept=".txt,.js,.css,.html,.json,.md,.csv,.xml,.py,.java,.cpp,.c,.log"><span id="nom-fichier-analyse">NO FILE SELECTED</span></div>
+                        <label for="contenu-analyse">INPUT / SOURCE CODE</label>
+                        <textarea id="contenu-analyse" rows="9" spellcheck="false" placeholder="Colle ici un texte, un extrait de code ou charge un fichier..."></textarea>
+                        <button class="bouton-executer bouton-lancer-analyse" id="bouton-analyser" type="button">◉ START DEEP SCAN</button>
+                    </article>
+                    <article class="panneau-resultat-analyse" id="panneau-resultat-analyse" aria-live="polite">
+                        <div class="entete-resultat-analyse"><span class="icone-cadenas" id="icone-cadenas">♙</span><div><span class="sur-titre">ANALYSIS STATUS</span><h3 id="titre-analyse">AWAITING SCAN</h3></div></div>
+                        <div class="animation-scan" id="animation-scan"><div class="cible-scan"><i></i><b></b><span></span></div><p id="texte-scan">SYSTEM READY / WAITING FOR INPUT</p></div>
+                        <div class="liste-erreurs" id="liste-erreurs"><p class="message-attente">◇ Diagnostic report will appear here.</p></div>
+                        <div class="actions-outil actions-rapport"><button class="bouton-secondaire" id="bouton-telecharger-rapport" type="button" disabled>DOWNLOAD REPORT</button><button class="bouton-secondaire" id="bouton-telecharger-source" type="button" disabled>DOWNLOAD CLEAN FILE</button></div>
+                        <p class="note-analyse">Le scanner effectue des contrôles statiques simples. Il ne lance pas les fichiers et ne remplace pas un audit de sécurité professionnel.</p>
+                    </article>
+                </div>
+            </section>
+
+            <!-- Septième section : contact inspiré de la dernière capture. -->
+            <section class="section-contact section-conteneur" id="contact">
+                <div class="titre-section titre-compact">
+                    <span class="sur-titre">07 / ESTABLISH CONNECTION</span>
+                    <h2>CONTACT <span>THE OPERATOR</span></h2>
+                    <p>Un message, une idée ou un projet ? Ouvrons un canal sécurisé.</p>
+                </div>
+                <div class="cadre-contact">
+                    <div class="coins-contact"><i></i><i></i><i></i><i></i></div>
+                    <div class="entete-contact"><span class="logo-contact">N<span>/</span>X</span><span class="statut-contact"><i></i> SECURE CHANNEL</span><span class="numero-contact">NX-CONTACT-04</span></div>
+                    <form class="formulaire-contact" id="formulaire-contact">
+                        <div class="titre-formulaire"><span>TRANSMISSION</span><small>ENCRYPTED MESSAGE</small></div>
+                        <label for="nom-contact">NAME / IDENTIFIER</label>
+                        <input type="text" id="nom-contact" name="nom" placeholder="Your name..." required>
+                        <label for="email-contact">EMAIL / RETURN ADDRESS</label>
+                        <input type="email" id="email-contact" name="email" placeholder="your@email.com" required>
+                        <label for="message-contact">MESSAGE / DATA PACKET</label>
+                        <textarea id="message-contact" name="message" rows="4" placeholder="Write your message here..." required></textarea>
+                        <button class="bouton-transmission" type="submit"><span>➤</span> TRANSMIT MESSAGE</button>
+                        <p class="retour-contact" id="retour-contact" aria-live="polite">AWAITING TRANSMISSION...</p>
+                    </form>
+                    <div class="carte-monde">
+                        <div class="grille-carte"></div>
+                        <svg viewBox="0 0 600 260" role="img" aria-label="Carte stylisée du monde">
+                            <path d="M45 65 L77 44 111 49 131 66 158 68 174 91 159 111 139 119 129 145 105 158 90 143 77 119 54 109 37 86 Z M151 161 L178 169 193 193 184 220 166 234 151 207 139 184 Z M248 55 L272 43 299 52 316 69 341 68 361 84 391 79 417 94 451 85 479 101 518 96 543 117 528 137 497 140 476 159 449 151 426 169 400 161 381 178 351 167 332 149 307 150 291 127 267 120 251 96 Z M285 151 L311 158 327 181 319 209 300 230 281 211 274 181 Z M470 184 L499 179 520 195 513 214 485 219 465 204 Z" fill="currentColor" opacity=".48"></path>
+                            <path d="M95 100 Q300 -15 500 119 M170 191 Q300 80 438 177" fill="none" stroke="#00f5c4" stroke-width="1.5" stroke-dasharray="4 7" opacity=".8"></path>
+                            <circle cx="300" cy="112" r="6" fill="#d8ff72"></circle><circle cx="300" cy="112" r="17" fill="none" stroke="#00f5c4" opacity=".8"><animate attributeName="r" values="9;25;9" dur="2.4s" repeatCount="indefinite"></animate><animate attributeName="opacity" values=".8;0;.8" dur="2.4s" repeatCount="indefinite"></animate></circle>
+                        </svg>
+                        <span class="etiquette-carte">GLOBAL NETWORK / NODE 01</span>
+                    </div>
+                    <div class="coordonnees-contact">
+                        <div>
+                            <span class="icone-coordonnee">⌖</span><span><small>OPERATOR</small>
+                            <strong>CHARLES AZEL</strong></span>
+                        </div>
+                        <div><span class="icone-coordonnee">✉</span><span><small>EMAIL CHANNEL</small>
+                            <strong>charlesmonjakidy@gmail.com</strong></span>
+                        </div>
+                        <div><span class="icone-coordonnee">◉</span><span><small>LOCATION</small>
+                            <strong>MADAGASCAR / EARTH</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="pied-site">
+            <span>© 2026 NEXUS MATRIX / BUILT BY CHARLES AZEL</span>
+            <span>THINK. CODE. CREATE. <i></i></span>
+            <label class="choix-langue" for="selecteur-langue">
+                <span>LANGUAGE</span>
+                <select id="selecteur-langue" aria-label="Choisir la langue">
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                    <option value="zh">中文</option>
+                    <option value="de">Deutsch</option>
+                </select>
+            </label>
+        </footer>
+    </div>
+
+    <!-- Charge les interactions après le contenu HTML. -->
+    <script src="script.js"></script>
+</body>
+</html>

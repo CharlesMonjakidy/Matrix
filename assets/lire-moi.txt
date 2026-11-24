@@ -1,0 +1,2 @@
+Dossier réservé aux images, icônes et autres ressources locales du projet.
+La version actuelle dessine ses effets principaux directement en HTML, CSS et Canvas.
